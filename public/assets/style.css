@@ -1,0 +1,13 @@
+* {
+  font-family: "Courier New", Courier, monospace;
+}
+section {
+  background-color: pink;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  margin: 0 auto;
+  max-width: 70%;
+  padding: 50px;
+}
