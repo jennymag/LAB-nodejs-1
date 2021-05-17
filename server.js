@@ -9,10 +9,29 @@ var express = require("express");
 var path = require("path");
 var app = express();
 
+var currValue = 0;
+
 app.use(express.static("public"));
 
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname + "/public/index.html"));
+});
+
+app.get("/value", function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ value: currValue }));
+});
+
+app.get("/increase", function (req, res) {
+  currValue = currValue + 1;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ value: currValue }));
+});
+
+app.get("/decrease", function (req, res) {
+  currValue = currValue - 1;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ value: currValue }));
 });
 
 app.get("/api/random", function (req, res) {
@@ -22,7 +41,6 @@ app.get("/api/random", function (req, res) {
 
 app.get("/api/custom_random/:id", function (req, res) {
   const { id } = req.params;
-  console.log(id);
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ number: Math.floor(Math.random() * id) + 1 }));
 });
@@ -42,3 +60,4 @@ var server = app.listen(3000, function () {
 
   console.log(host, port);
 });
+//increase decrease
