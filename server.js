@@ -9,34 +9,36 @@ var express = require("express");
 var path = require("path");
 var app = express();
 
+app.use(express.json());
 var currValue = 0;
 
 app.use(express.static("public"));
-
+/*
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname + "/public/index.html"));
 });
-
-app.get("/value", function (req, res) {
+*/
+app.get("/api/value", function (req, res) {
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ value: currValue }));
 });
 
-app.get("/increase", function (req, res) {
+app.get("/api/increase", function (req, res) {
   currValue = currValue + 1;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ value: currValue }));
 });
 
-app.get("/decrease", function (req, res) {
+app.get("/api/decrease", function (req, res) {
   currValue = currValue - 1;
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ value: currValue }));
 });
 
 app.get("/api/random", function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ number: Math.floor(Math.random() * 1024) }));
+  res.send({ number: Math.floor(Math.random() * 1024) });
+  //res.setHeader("Content-Type", "application/json");
+  //res.end(JSON.stringify({ number: Math.floor(Math.random() * 1024) }));
 });
 
 app.get("/api/custom_random/:id", function (req, res) {
@@ -45,13 +47,24 @@ app.get("/api/custom_random/:id", function (req, res) {
   res.end(JSON.stringify({ number: Math.floor(Math.random() * id) + 1 }));
 });
 
-app.post("/", express.json(), function (req, res) {
-  const vowels = ["a", "e", "i", "o", "u"];
-  const str = req.body.word;
-  const sortedStrArr = str.split("").sort();
-  const result = sortedStrArr.filter((vowel) => vowels.includes(vowel));
-
-  res.send(JSON.stringify({ vowels: result.length }));
+app.post("/api/vowels", function (req, res) {
+  //const vowels = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "å"];
+  const { word } = req.body;
+  if (!word) {
+    res.send({
+      success: false,
+      message: "You need to include a body: {word: <word>}",
+    });
+    return;
+  }
+  //const sortedStrArr = word.split("").sort();
+  const result = sortedStrArr.filter((vowel) =>
+    "AEIOUaeiouåäö".includes(vowel)
+  );
+  const vowels = word
+    .split("")
+    .filter((vowel) => "AEIOUaeiouåäö".includes(vowel)).length;
+  res.send({ vowels });
 });
 
 var server = app.listen(3000, function () {
