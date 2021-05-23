@@ -11,44 +11,39 @@ var app = express();
 
 app.use(express.json());
 var currValue = 0;
+var oldValue = 0;
 
 app.use(express.static("public"));
-/*
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname + "/public/index.html"));
-});
-*/
+
 app.get("/api/value", function (req, res) {
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify({ value: currValue }));
 });
 
 app.get("/api/increase", function (req, res) {
-  currValue = currValue + 1;
+  oldValue = currValue;
+  currValue += 1;
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ value: currValue }));
+  res.end(JSON.stringify({ newValue: currValue, oldValue }));
 });
 
 app.get("/api/decrease", function (req, res) {
+  oldValue = currValue;
   currValue = currValue - 1;
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ value: currValue }));
+  res.end(JSON.stringify({ newValue: currValue, oldValue }));
 });
 
 app.get("/api/random", function (req, res) {
   res.send({ number: Math.floor(Math.random() * 1024) });
-  //res.setHeader("Content-Type", "application/json");
-  //res.end(JSON.stringify({ number: Math.floor(Math.random() * 1024) }));
 });
 
 app.get("/api/custom_random/:id", function (req, res) {
   const { id } = req.params;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ number: Math.floor(Math.random() * id) + 1 }));
+  res.send({ number: Math.floor(Math.random() * id) + 1 });
 });
 
 app.post("/api/vowels", function (req, res) {
-  //const vowels = ["a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "å"];
   const { word } = req.body;
   if (!word) {
     res.send({
@@ -57,7 +52,6 @@ app.post("/api/vowels", function (req, res) {
     });
     return;
   }
-  //const sortedStrArr = word.split("").sort();
   const result = sortedStrArr.filter((vowel) =>
     "AEIOUaeiouåäö".includes(vowel)
   );
@@ -73,4 +67,3 @@ var server = app.listen(3000, function () {
 
   console.log(host, port);
 });
-//increase decrease
